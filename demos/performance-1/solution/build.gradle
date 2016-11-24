@@ -1,0 +1,16 @@
+
+apply plugin: "java"
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    runtime "commons-io:commons-io:2.3"
+    runtime "org.hibernate:hibernate-core:5.2.4.Final"
+}
+
+task stageLibraries(type: Copy) {
+    from configurations.runtime
+    into "${buildDir}/dist/lib"
+}

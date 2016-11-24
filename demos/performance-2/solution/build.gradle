@@ -1,0 +1,24 @@
+apply plugin: "base"
+
+class CoolTask extends DefaultTask {
+    @Input
+    String inputUrl
+    
+    @OutputDirectory
+    File outputDirectory
+
+    @TaskAction
+    void doSomethingCool() {
+        outputDirectory.mkdirs()
+        URL url = new URL(inputUrl + ".txt")
+        File outputFile = new File(outputDirectory, new File(url.file).name) 
+        outputFile.text = url.text
+        logger.lifecycle "Something cool is in: ${outputFile.url}"
+    }
+}
+
+task getTheElephant(type: CoolTask) {
+    // inputUrl = "https://scontent-mia1-1.cdninstagram.com/t51.2885-15/e35/14736448_714586842031901_2237896575051366400_n.jpg"
+	inputUrl = "https://scontent-mia1-1.cdninstagram.com/t51.2885-15/e35/15047032_695244147309795_460390678468231168_n.jpg"
+	outputDirectory = file("${buildDir}/ascii")
+}

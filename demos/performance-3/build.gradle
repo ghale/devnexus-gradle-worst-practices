@@ -1,0 +1,17 @@
+apply plugin: "base"
+
+def resourcesDir = file("${buildDir}/resources")
+
+task copyDefaults(type: Copy) {
+    from 'src/main/resources'
+    into resourcesDir
+}
+
+task copyEnvSpecific(type: Copy) {
+    from 'src/env/prod'
+    into resourcesDir
+}
+
+task copyAll {
+    dependsOn copyDefaults,copyEnvSpecific
+}
