@@ -1,0 +1,16 @@
+def blessedRepositories = [
+    "http://repo.acme.org/maven/",
+    "https://repo.acme.org/ivy/"
+]
+
+repositories.each { repository ->
+    if (! blessedRepositories.contains(repository.url.toString())) {
+        throw new UnsupportedRepositoryException(repository.url)
+    }
+}
+
+class UnsupportedRepositoryException extends GradleException {
+    public UnsupportedRepositoryException(url) {
+        super("${url} is not an approved repository")
+    }
+}

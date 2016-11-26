@@ -1,0 +1,7 @@
+apply plugin: "java"
+
+jar {
+    into("META-INF") {
+        from("${rootDir}/license/LICENSE")
+    }
+}

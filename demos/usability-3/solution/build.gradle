@@ -1,0 +1,47 @@
+apply plugin: "base"
+
+task createSomeSecretStuff {
+    ext.secretsDir = file("${buildDir}/secrets")
+    outputs.dir secretsDir
+
+    doLast {
+        secretsDir.mkdirs()
+        [ 'secret1', 'secret2' ].each { secret ->
+            def outputFile = new File(secretsDir, secret)
+            outputFile << "This is ${secret}"
+        }
+    }
+}
+
+task encryptSomeStuff(type: EncryptTask) {
+    publicKeyFile = file('pubkey.rsa')
+    secretStuff = fileTree(createSomeSecretStuff.secretsDir)
+    secretStuffDir = file("${buildDir}/encrypted")
+
+    dependsOn createSomeSecretStuff
+}
+
+task createSecretsZip(type: Zip) {
+    from encryptSomeStuff
+    archiveName = "secrets.zip"
+}
+
+class EncryptTask extends DefaultTask {
+    @InputFile
+    File publicKeyFile
+
+    @InputFiles
+    FileCollection secretStuff
+
+    @OutputDirectory
+    File secretStuffDir
+
+    @TaskAction
+    void encryptSecretStuff() {
+        Encrypt encrypt = new Encrypt(publicKeyFile)
+        secretStuff.each { file ->
+            File encryptedFile = new File(secretStuffDir, file.name + ".enc")
+            encryptedFile << encrypt.encryptAsString(file.text)
+        }
+    }
+}

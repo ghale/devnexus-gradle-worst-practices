@@ -1,0 +1,6 @@
+repositories {
+    maven { url "http://repo.acme.org/maven/" }
+    mavenCentral()
+}
+
+apply from: "gradle/checkRepositories.gradle"

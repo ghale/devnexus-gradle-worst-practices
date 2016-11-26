@@ -1,0 +1,16 @@
+subprojects {
+    apply plugin: 'java'
+    apply from: "${rootDir}/gradle/integTest.gradle"
+
+    tasks.withType(Test) {
+        maxParallelForks = 8
+    }
+}
+
+task combineReports(type: TestReport) {
+    destinationDir = file("${buildDir}/allTestReports")
+}
+
+subprojects {
+    rootProject.combineReports.reportOn tasks.withType(Test)
+}

@@ -6,5 +6,4 @@ task copyAll(type: Copy) {
     from 'src/main/resources'
     from 'src/env/prod'
     into resourcesDir
-    duplicatesStrategy = "EXCLUDE"
 }

@@ -1,0 +1,8 @@
+{
+    "className": "Song",
+    "fields": [
+        "name",
+        "artist",
+        "album"
+    ]
+}

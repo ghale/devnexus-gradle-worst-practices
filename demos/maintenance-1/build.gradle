@@ -1,0 +1,22 @@
+apply plugin: "base"
+
+task generateFromIdl {
+    ext.idlFiles = fileTree('src/main/idl')
+    ext.generatedHeaderDir = file("${buildDir}/src/generated/headers")
+    ext.generatedSourcesDir = file("${buildDir}/src/generated/sources")
+
+    doLast {
+        generatedHeaderDir.mkdirs()
+        generatedSourcesDir.mkdirs()
+        idlFiles.each { File idlFile ->
+            def baseName = idlFile.name - '.idl'
+            def pattern = ~/(?s).*HEADER <<<(.*)>>>.*SOURCE <<<(.*)>>>.*/
+            def matcher = pattern.matcher(idlFile.text)
+            File headerFile = new File(generatedHeaderDir, "${baseName}.h")
+            File sourceFile = new File(generatedSourcesDir, "${baseName}.c")
+            assert matcher.matches()
+            headerFile.text = matcher.group(1)
+            sourceFile.text = matcher.group(2)
+        }
+    }
+}

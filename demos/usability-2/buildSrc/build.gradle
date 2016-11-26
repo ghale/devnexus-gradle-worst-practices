@@ -1,0 +1,9 @@
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile gradleApi()
+
+    compile 'org.bouncycastle:bcpkix-jdk15on:1.51'
+}

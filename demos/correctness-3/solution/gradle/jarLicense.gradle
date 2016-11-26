@@ -1,0 +1,8 @@
+
+pluginManager.withPlugin("java") {
+    jar {
+        into("META-INF") {
+            from("${rootDir}/license/LICENSE")
+        }
+    }
+}

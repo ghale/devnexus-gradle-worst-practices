@@ -1,0 +1,6 @@
+subprojects {
+    group = "com.acme"
+
+    afterEvaluate { test { maxParallelForks = 8 } }
+}
+

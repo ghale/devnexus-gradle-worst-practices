@@ -1,0 +1,4 @@
+apply plugin: "war"
+sourceSets.main.java.srcDirs = ["src"]
+
+war { from "${rootDir}/license/license.txt" }

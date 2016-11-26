@@ -1,0 +1,37 @@
+apply plugin: "java"
+
+def generatedDir = file("${buildDir}/generated")
+
+task generateSources(type: GenerateSource) {
+    inputFiles = fileTree("src/inputs")
+    outputDir = generatedDir
+}
+
+sourceSets {
+    generated {
+        java.srcDir generatedDir
+    }
+}
+
+class GenerateSource extends DefaultTask {
+    @InputFiles
+    FileCollection inputFiles
+    @OutputDirectory
+    File outputDir
+
+    @TaskAction
+    def generate() {
+        inputFiles.each { file ->
+            jsonToClass(file)
+        }
+    }
+
+    void jsonToClass(File file) {
+        def classData = new groovy.json.JsonSlurper().parseText(file.text)
+        def generatedFile = new File(outputDir, classData.className + ".java")
+        generatedFile << "public class ${classData.className} {\n"
+        classData.fields.each { field -> generatedFile << "    String ${field};\n" }
+        generatedFile << "}\n" 
+    }
+}
+

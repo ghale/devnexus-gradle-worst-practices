@@ -1,0 +1,14 @@
+apply plugin: "java"
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    runtime "commons-io:commons-io:2.1"
+}
+
+task copyJars(type: Copy) {
+    from configurations.runtime
+    into "${buildDir}/runtimeJars"
+}

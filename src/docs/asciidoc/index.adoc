@@ -161,8 +161,8 @@ image::car-repair.jpg[float="right", align="center", width="75%", height="75%"]
 ----
 task generateFromIdl {
     ext.idlFiles = fileTree('src/main/idl')
-    ext.generatedHeaderDir = fileTree("${buildDir}/src/generated/headers"
-    ext.generatedSourcesDir = fileTree("${buildDir}/src/generated/sources"
+    ext.generatedHeaderDir = file("${buildDir}/src/generated/headers")
+    ext.generatedSourcesDir = file("${buildDir}/src/generated/sources")
 
     doLast {
         idlFiles.each { File idlFile ->
@@ -184,9 +184,9 @@ task generateFromIdl {
 
 [source,groovy]
 ----
-def generatedDir = file("${buildDir}/generated"
+def generatedDir = file("${buildDir}/generated")
 
-task generateSources(type: Generate) {
+task generateSources(type: GenerateSource) {
     inputFiles = fileTree("src/inputs")
     outputDir = generatedDir
 }
@@ -233,18 +233,18 @@ sourceSets {
 subprojects {
     group = "com.acme"
 
-    test { maxParallelForks = 8 }
+    afterEvaluate { test { maxParallelForks = 8 } }
 }
 
 // child1 build.gradle
 apply plugin: "java"
-sourceSets.main.java = ["src"]
+sourceSets.main.java.srcDirs = ["src"]
 
 // child2 build.gradle
 apply plugin: "war"
-sourceSets.main.java = ["src"]
+sourceSets.main.java.srcDirs = ["src"]
 
-war { from "${rootProject}/license/license.txt" }
+war { from "${rootDir}/license/license.txt" }
 ----
 
 == Lessons
@@ -272,6 +272,9 @@ image::car-fire.jpg[float="right", align="center", width="75%", height="75%"]
 [source,groovy]
 ----
 subprojects {
+    apply plugin: 'java'
+    apply from: "${rootDir}/gradle/integTest.gradle"
+
     test {
         maxParallelForks = 8
     }
@@ -286,12 +289,8 @@ subprojects {
 
 [source,groovy]
 ----
-subprojects {
-    apply plugin: 'java'
-}
-
 task combineReports(type: TestReport) {
-    destinationDir = file("${buildDir}/allTestReports"
+    destinationDir = file("${buildDir}/allTestReports")
 }
 
 subprojects {
@@ -347,7 +346,7 @@ allprojects {
 
     jar {
         into("META-INF") {
-            from("${rootProject}/license/LICENSE")
+            from("${rootDir}/license/LICENSE")
         }
     }
 }
@@ -385,6 +384,31 @@ task copyJars(type: Copy) {
 
 == Usability Worst Practice #2
 
+=== Lack of cohesion in tasks
+
+* Users may only want to perform a subset of work
+* Invalidating one input makes the whole task out-of-date
+* Inhibits reuse
+
+=== Example
+
+[source,groovy]
+----
+class KitchenSinkTask extends DefaultTask {
+    @OutputFile
+    File outputZip
+
+    @TaskAction
+    void doEverything() {
+        // generate files to an intermediate directory
+        // encrypt them
+        // produce a zip
+    }
+}
+----
+
+== Usability Worst Practice #3
+
 === Failing late instead of early
 
 * User doesn't know there is an issue
@@ -397,7 +421,7 @@ task copyJars(type: Copy) {
 ----
 class EncryptTask extends DefaultTask {
     @InputFile
-    File privateKeyFile
+    File publicKeyFile
 
     @InputFiles
     FileCollection secretStuff
@@ -408,35 +432,6 @@ class EncryptTask extends DefaultTask {
     @TaskAction
     void encryptSecretStuff() {
         // load key and encrypt files
-    }
-}
-----
-
-== Usability Worst Practice #3
-
-=== Lack of coherence in tasks
-
-* Users may only want to perform a subset of work
-* Invalidating one input makes the whole task out-of-date
-* Inhibits reuse
-
-=== Example
-
-[source,groovy]
-----
-class KitchenSinkTask extends DefaultTask {
-    @InputFiles
-    FileCollection inputFiles
-
-    @OutputFile
-    File outputZip
-
-    @TaskAction
-    void doEverything() {
-        // copy files to an intermediate directory
-        // transform them
-        // encrypt them
-        // produce a zip
     }
 }
 ----
