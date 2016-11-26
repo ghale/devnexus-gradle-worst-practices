@@ -133,6 +133,7 @@ task copyDefaults(type: Copy) {
 task copyEnvSpecific(type: Copy) {
     from 'src/env/prod'
     into resourcesDir
+    dependsOn copyDefaults
 }
 ----
 
