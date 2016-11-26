@@ -70,7 +70,7 @@ Common anti-patterns that affect:
 
 == Performance
 
-image::car-engine.jpg[float="right", align="center", width="75%", height="75%"]
+image::overloaded-truck.jpg[float="right", align="center", width="75%", height="75%"]
 
 == Performance Worst Practice #1
 
@@ -146,7 +146,7 @@ task copyEnvSpecific(type: Copy) {
 
 == Maintenance
 
-image::car-repair.jpg[float="right", align="center", width="75%", height="75%"]
+image::weird-truck.jpg[float="right", align="center", width="75%", height="75%"]
 
 == Maintenance Worst Practice #1
 
@@ -443,6 +443,24 @@ class EncryptTask extends DefaultTask {
 === Fail early whenever possible
 
 === Make tasks coherent and reusable
+
+== Build scans
+
+[cols="50a,50a"]
+|===
+|
+* First member of the Cloud Services family
+* Insights into your build
+* View and share via URL
+* Debug, optimize and refine
+* Analyze _all_ of your builds
+* Available for free
+|image:build-scans.png[]
+|===
+
+=== Example
+
+https://scans.gradle.com/s/nggua2vdxkr6c
 
 == Thank you!
 
