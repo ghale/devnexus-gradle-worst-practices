@@ -6,3 +6,7 @@ sourceSets {
         resources.srcDirs = ["properties"]
     }
 }
+
+jar {
+    destinationDir = file("jars")
+}

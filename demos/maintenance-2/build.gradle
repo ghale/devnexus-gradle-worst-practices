@@ -13,6 +13,8 @@ sourceSets {
     }
 }
 
+compileGeneratedJava.dependsOn generateSources
+
 class GenerateSource extends DefaultTask {
     @InputFiles
     FileCollection inputFiles

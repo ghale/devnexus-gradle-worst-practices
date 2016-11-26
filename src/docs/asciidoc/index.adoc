@@ -205,7 +205,7 @@ sourceSets {
 
 * Increases maintenance footprint
 * Makes scripts less readable
-* Difficult to test
+* Increases exposure to deprecation
 
 === Example
 [source,groovy]
@@ -215,6 +215,10 @@ sourceSets {
         java.srcDirs = ["src"]
         resources.srcDirs = ["properties"]
     }
+}
+
+jar {
+    destinationDir = "jars"
 }
 ----
 
@@ -253,6 +257,8 @@ war { from "${rootDir}/license/license.txt" }
 === Prefer task types over ad hoc tasks
 
 === Use plugins to apply common conventions
+
+=== Don't configure things needlessly
 
 === Keep configuration coherent and consistent
 
