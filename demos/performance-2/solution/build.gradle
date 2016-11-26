@@ -13,7 +13,7 @@ class CoolTask extends DefaultTask {
         URL url = new URL(inputUrl + ".txt")
         File outputFile = new File(outputDirectory, new File(url.file).name) 
         outputFile.text = url.text
-        logger.lifecycle "Something cool is in: ${outputFile.url}"
+        logger.lifecycle "Something cool is in: ${outputFile.toURI().toURL()}"
     }
 }
 
