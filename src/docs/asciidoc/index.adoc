@@ -61,12 +61,18 @@ image::junk-van.jpg[float="right", align="center", width="75%", height="75%"]
 
 == What we're going to talk about
 
-Common anti-patterns that affect:
+10 Common anti-patterns that affect:
 
 * Performance
 * Maintenance
 * Correctness
 * Usability
+
+== What you should do
+
+* Ask questions
+* Interact
+* Fill out the evaluation
 
 == Performance
 
@@ -75,10 +81,6 @@ image::overloaded-truck.jpg[float="right", align="center", width="75%", height="
 == Performance Worst Practice #1
 
 === Resolving dependencies at configuration time
-
-* Worst when resolving dynamic or changing dependencies
-* Also places load on the repository
-* Warning sign: non-plugin dependencies downloading before tasks run
 
 === Example
 
@@ -90,12 +92,15 @@ task stageLibraries(type: Copy) {
 }
 ----
 
+=== Effects
+
+* Adds overhead on every invocation
+* Also places load on the repository
+* Warning sign: non-plugin dependencies downloading before tasks run
+
 == Performance Worst Practice #2
 
 === Not defining inputs/outputs on tasks
-
-* Causes tasks to run every time
-* Limits inferred task dependencies
 
 === Example
 
@@ -112,12 +117,14 @@ class CoolTask extends DefaultTask {
 }
 ----
 
+=== Effects
+
+* Causes tasks to run every time
+* Limits inferred task dependencies
+
 == Performance Worst Practice #3
 
 === Sharing output directories
-
-* Causes tasks to be mysteriously out-of-date
-* Symptoms are very non-intuitive
 
 === Example
 
@@ -137,6 +144,11 @@ task copyEnvSpecific(type: Copy) {
 }
 ----
 
+=== Effects
+
+* Causes tasks to be mysteriously out-of-date
+* Symptoms can be very non-intuitive
+
 == Lessons
 
 === Use configurations as file collections wherever possible
@@ -151,35 +163,7 @@ image::weird-truck.jpg[float="right", align="center", width="75%", height="75%"]
 
 == Maintenance Worst Practice #1
 
-=== Overuse of ad hoc tasks
-
-* Complicates reuse
-* Makes configuration injection difficult
-
-=== Example
-
-[source,groovy]
-----
-task generateFromIdl {
-    ext.idlFiles = fileTree('src/main/idl')
-    ext.generatedHeaderDir = file("${buildDir}/src/generated/headers")
-    ext.generatedSourcesDir = file("${buildDir}/src/generated/sources")
-
-    doLast {
-        idlFiles.each { File idlFile ->
-            ...
-        }
-    }
-}
-----
-
-== Maintenance Worst Practice #2
-
 === Overuse of "def"
-
-* Hides actual relationships between objects
-* Not visible to plugins
-* Associates the value to the script instead of the "owner"
 
 === Example
 
@@ -199,13 +183,15 @@ sourceSets {
 }
 ----
 
-== Maintenance Worst Practice #3
+=== Effects
+
+* Hides actual relationships between objects
+* Not visible to plugins
+* Associates the value to the script instead of the "owner"
+
+== Maintenance Worst Practice #2
 
 === Configuration over convention
-
-* Increases maintenance footprint
-* Makes scripts less readable
-* Increases exposure to deprecation
 
 === Example
 [source,groovy]
@@ -222,53 +208,19 @@ jar {
 }
 ----
 
-== Maintenance Worst Practice #4
+=== Effects
 
-=== Spreading config over root and sub-projects
-
-* Difficult for others to grok
-* Can lead to "mysterious" behavior
-* Easy to miss changes while refactoring
-
-=== Example
-
-[source,groovy]
-----
-// root build.gradle
-subprojects {
-    group = "com.acme"
-
-    afterEvaluate { test { maxParallelForks = 8 } }
-}
-
-project(":child1") {
-    sourceSets.main.java.srcDirs = ["src"]
-}
-----
-
-=== Example
-
-[source,groovy]
-----
-// child1 build.gradle
-apply plugin: "java"
-
-// child2 build.gradle
-apply plugin: "war"
-sourceSets.main.java.srcDirs = ["src"]
-
-war { from "${rootDir}/license/license.txt" }
-----
+* Increases maintenance footprint
+* Makes scripts less readable
+* Increases exposure to deprecation
 
 == Lessons
 
-=== Prefer task types over ad hoc tasks
+=== Make task relationships clear and direct
 
 === Use plugins to apply common conventions
 
 === Don't configure things needlessly
-
-=== Keep configuration coherent and consistent
 
 == Correctness
 
@@ -277,10 +229,6 @@ image::car-fire.jpg[float="right", align="center", width="75%", height="75%"]
 == Correctness Worst Practice #1
 
 === Overuse of task names instead of types
-
-* Makes configuration injection brittle
-* Difficult to handle multiple tasks in the same project
-* Can create ordering problems
 
 === Example
 
@@ -313,13 +261,15 @@ subprojects {
 }
 ----
 
+=== Effects
+
+* Makes configuration injection brittle
+* Difficult to handle multiple tasks in the same project
+* Can create ordering problems
+
 == Correctness Worst Practice #2
 
 === Collapsing domain object collections
-
-* Causes the collection to be immediately evaluated
-* Does not apply configuration to objects not yet created
-* Can lead to partially configured collections
 
 === Example
 
@@ -344,13 +294,15 @@ task copySources(type: Copy) {
 }
 ----
 
+=== Effects
+
+* Causes the collection to be immediately evaluated
+* Does not apply configuration to objects not yet created
+* Can lead to partially configured collections
+
 == Correctness Worst Practice #3
 
 === Applying unnecessary plugins
-
-* May introduce unintended functionality
-* As project evolves may introduce errors
-* May create conflicts in projects
 
 === Example
 
@@ -367,6 +319,12 @@ allprojects {
 }
 ----
 
+=== Effects
+
+* May introduce unintended functionality
+* As project evolves may introduce errors
+* May create conflicts in projects
+
 == Lessons
 
 === Prefer task rules over task names
@@ -379,31 +337,15 @@ allprojects {
 
 image::car-wall.jpg[float="right", align="center", width="75%", height="75%"]
 
-== Usability Worst Practice #1
-
-=== Not adding group/description to tasks
+=== Effects
 
 * Difficult to discover tasks
 * Hard to understand project lifecycle
 * Can lead to wrong tasks being executed
 
-=== Example
-
-[source,groovy]
-----
-task copyJars(type: Copy) {
-    from configurations.runtime
-    into "${buildDir}/runtimeJars"
-}
-----
-
-== Usability Worst Practice #2
+== Usability Worst Practice #1
 
 === Lack of cohesion in tasks
-
-* Users may only want to perform a subset of work
-* Invalidating one input makes the whole task out-of-date
-* Inhibits reuse
 
 === Example
 
@@ -422,13 +364,15 @@ class KitchenSinkTask extends DefaultTask {
 }
 ----
 
-== Usability Worst Practice #3
+=== Effects
+
+* Users may only want to perform a subset of work
+* Invalidating one input makes the whole task out-of-date
+* Inhibits reuse
+
+== Usability Worst Practice #2
 
 === Failing late instead of early
-
-* User doesn't know there is an issue
-* Can potentially duplicate work
-* Much validation can be done early in the build
 
 === Example
 
@@ -451,13 +395,17 @@ class EncryptTask extends DefaultTask {
 }
 ----
 
+=== Effects
+
+* User doesn't know there is an issue
+* Can potentially duplicate work
+* Increases feedback time for CI
+
 == Lessons
 
-=== Make your tasks self-documenting
+=== Make tasks coherent, atomic and reusable
 
 === Fail early whenever possible
-
-=== Make tasks coherent and reusable
 
 == Build scans
 
