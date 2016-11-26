@@ -4,3 +4,6 @@ subprojects {
     afterEvaluate { test { maxParallelForks = 8 } }
 }
 
+project(":child1") {
+    sourceSets.main.java.srcDirs = ["src"]
+}
