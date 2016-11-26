@@ -241,9 +241,17 @@ subprojects {
     afterEvaluate { test { maxParallelForks = 8 } }
 }
 
+project(":child1") {
+    sourceSets.main.java.srcDirs = ["src"]
+}
+----
+
+=== Example
+
+[source,groovy]
+----
 // child1 build.gradle
 apply plugin: "java"
-sourceSets.main.java.srcDirs = ["src"]
 
 // child2 build.gradle
 apply plugin: "war"
