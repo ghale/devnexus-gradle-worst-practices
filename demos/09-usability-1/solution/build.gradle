@@ -9,7 +9,6 @@ task createSomeSecretStuff {
         [ 'secret1', 'secret2' ].each { secret ->
             def outputFile = new File(secretsDir, secret)
             outputFile << "This is ${secret}"
-            sleep 5000
         }
     }
 }
@@ -22,12 +21,9 @@ task encryptSomeStuff(type: EncryptTask) {
     dependsOn createSomeSecretStuff
 }
 
-gradle.taskGraph.whenReady { graph ->
-    if (graph.hasTask(":encryptSomeStuff")) {
-        if (! encryptSomeStuff.publicKeyFile.exists()) {
-            throw new IllegalStateException("${encryptSomeStuff.publicKeyFile} does not exist!")
-        }
-    }
+task createSecretsZip(type: Zip) {
+    from encryptSomeStuff
+    archiveName = "secrets.zip"
 }
 
 class EncryptTask extends DefaultTask {

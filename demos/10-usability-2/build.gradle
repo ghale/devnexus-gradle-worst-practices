@@ -1,57 +1,43 @@
 apply plugin: "base"
 
-task createSecretsZip(type: KitchenSinkTask) {
-    outputZip = file("${buildDir}/secrets.zip")
-}
+task createSomeSecretStuff {
+    ext.secretsDir = file("${buildDir}/secrets")
+    outputs.dir secretsDir
 
-import java.util.zip.ZipOutputStream  
-import java.util.zip.ZipEntry  
-
-class KitchenSinkTask extends DefaultTask {
-    @OutputFile
-    File outputZip
-
-    @TaskAction
-    void doEverything() {
-        def secrets = createSecrets()
-        def encrypted = encryptSecrets(secrets)
-        outputZip = createZip(encrypted)
-    }
-
-    FileCollection createSecrets() {
-        File secretsDir = project.file("${project.buildDir}/secrets")
+    doLast {
         secretsDir.mkdirs()
         [ 'secret1', 'secret2' ].each { secret ->
             def outputFile = new File(secretsDir, secret)
             outputFile << "This is ${secret}"
+            sleep 5000
         }
-        return project.fileTree(secretsDir)
     }
+}
 
-    FileCollection encryptSecrets(FileCollection secretStuff) {
-        File secretStuffDir = project.file("${project.buildDir}/encrypted")
-        secretStuffDir.mkdirs()
-        Encrypt encrypt = new Encrypt(project.file("pubkey.rsa"))
+task encryptSomeStuff(type: EncryptTask) {
+    publicKeyFile = file('pubkey.rsa')
+    secretStuff = fileTree(createSomeSecretStuff.secretsDir)
+    secretStuffDir = file("${buildDir}/encrypted")
+
+    dependsOn createSomeSecretStuff
+}
+
+class EncryptTask extends DefaultTask {
+    @InputFile
+    File publicKeyFile
+
+    @InputFiles
+    FileCollection secretStuff
+
+    @OutputDirectory
+    File secretStuffDir
+
+    @TaskAction
+    void encryptSecretStuff() {
+        Encrypt encrypt = new Encrypt(publicKeyFile)
         secretStuff.each { file ->
             File encryptedFile = new File(secretStuffDir, file.name + ".enc")
             encryptedFile << encrypt.encryptAsString(file.text)
         }
-        return project.fileTree(secretStuffDir)
-    }
-
-    File createZip(FileCollection inputs) {
-        ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(outputZip))
-        inputs.each { file ->
-            zipFile.putNextEntry(new ZipEntry(file.getName()))
-            def buffer = new byte[1024]  
-            file.withInputStream { i ->  
-                def l = i.read(buffer)  
-                if (l > 0) {  
-                    zipFile.write(buffer, 0, l)  
-                }  
-            }  
-            zipFile.closeEntry()  
-        }  
-        zipFile.close()  
     }
 }

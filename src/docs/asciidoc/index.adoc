@@ -337,12 +337,6 @@ allprojects {
 
 image::car-wall.jpg[float="right", align="center", width="75%", height="75%"]
 
-=== Effects
-
-* Difficult to discover tasks
-* Hard to understand project lifecycle
-* Can lead to wrong tasks being executed
-
 == Usability Worst Practice #1
 
 === Lack of cohesion in tasks
