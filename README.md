@@ -1,5 +1,5 @@
-# G3-gradle-worst-practices
-Slides and demos from my G3 Summit Gradle Worst Practices presentation.
+# devnexus-gradle-worst-practices
+Slides and demos from my DevNexus Gradle Worst Practices presentation.
 
 ## Layout
 - src/docs - The asciidoc sources for the slides
