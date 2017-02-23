@@ -1,6 +1,6 @@
 = Gradle Worst Practices
 Gary Hale, Gradle
-2016-11-14
+2017-02-22
 :revnumber: {project-version}
 :example-caption!:
 ifndef::imagesdir[:imagesdir: images]
@@ -72,7 +72,7 @@ image::junk-van.jpg[float="right", align="center", width="75%", height="75%"]
 
 * Ask questions
 * Interact
-* Fill out the evaluation
+* Provide feedback
 
 == Performance
 
@@ -421,7 +421,7 @@ https://scans.gradle.com/s/nggua2vdxkr6c
 
 == Thank you!
 
-* Slides and code : https://github.com/ghale/G3-gradle-worst-practices
+* Slides and code : https://github.com/ghale/devnexus-gradle-worst-practices
 * Gradle documentation : http://gradle.org/documentation/
 * Gradle forums : http://forums.gradle.org
 
